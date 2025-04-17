@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const config = require('./config');
+const config = require('./config/default.json');
 const apiRoutes = require('./routes/api');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -8,9 +8,9 @@ const cors = require('cors');
 class App {
   constructor() {
     this.app = express();
+    this.server = null;
     this.setupMiddleware();
     this.setupRoutes();
-    this.setupDatabase();
   }
 
   setupMiddleware() {
@@ -21,8 +21,8 @@ class App {
 
   setupRoutes() {
     this.app.use('/api', apiRoutes);
-    
-    // Health check endpoint
+
+    // Health check route
     this.app.get('/health', (req, res) => {
       res.json({ status: 'healthy' });
     });
@@ -30,29 +30,35 @@ class App {
 
   async setupDatabase() {
     try {
-      await mongoose.connect(config.database.url, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useCreateIndex: true
-      });
-      console.log('Connected to MongoDB');
+      await mongoose.connect(config.database.url);
+        // useNewUrlParser: true,
+        // useUnifiedTopology: true
+      
+      console.log('✅ Connected to MongoDB');
     } catch (error) {
-      console.error('MongoDB connection error:', error);
+      console.error('❌ MongoDB connection error:', error.message);
       process.exit(1);
     }
   }
 
-  start() {
-    const port = config.server.port;
-    this.server = this.app.listen(port, config.server.host, () => {
-      console.log(`Server running on http://${config.server.host}:${port}`);
+  async start() {
+    console.log('⏳ Starting app...');
+    await this.setupDatabase();
+
+    const port = config.server.port || 3000;
+    const host = config.server.host || 'localhost';
+
+    this.server = this.app.listen(port, host, () => {
+      console.log(`🚀 Server running at http://${host}:${port}`);
     });
   }
 
   stop() {
     if (this.server) {
-      this.server.close();
-      mongoose.disconnect();
+      this.server.close(() => {
+        console.log('🛑 Server stopped');
+        mongoose.disconnect();
+      });
     }
   }
 }
