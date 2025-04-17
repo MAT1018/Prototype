@@ -1,0 +1,19 @@
+{
+  "server": {
+    "port": 3000,
+    "host": "0.0.0.0"
+  },
+  "mojaloop": {
+    "dfspId": "merchantdfsp",
+    "currency": "USD",
+    "endpoint": "http://localhost:4000",
+    "oauthToken": "your-oauth-token"
+  },
+  "lei": {
+    "validationEndpoint": "https://leilookup.gleif.org/api/v2/leirecords",
+    "cacheTTL": 86400
+  },
+  "database": {
+    "url": "mongodb://localhost:27017/lei-merchant-payments"
+  }
+}
