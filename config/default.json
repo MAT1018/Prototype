@@ -5,7 +5,7 @@
   },
   "mojaloop": {
     "dfspId": "merchantdfsp",
-    "currency": "USD",
+    "currency": "INR",
     "endpoint": "http://localhost:4000",
     "oauthToken": "your-oauth-token"
   },
